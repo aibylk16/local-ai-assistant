@@ -60,6 +60,7 @@ The user asked not to install dependencies on this PC and to install/check the p
 **TODOs / known risks**
 
 - This local folder is not currently connected to a GitHub repository, and GitHub CLI is not installed here.
+- A push was attempted to `https://github.com/aibylk16/local-ai-assistant.git`, but GitHub returned `Repository not found.`
 - The GitHub workflow has not run yet; actual install/test/build status remains pending until the project is pushed or uploaded to GitHub.
 - The workflow uses `npm install` because no `package-lock.json` is committed yet. Once a trusted environment produces a lockfile, commit it and switch CI to `npm ci`.
 
