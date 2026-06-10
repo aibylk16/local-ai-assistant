@@ -1,0 +1,18 @@
+{
+  "name": "@local-ai-assistant/connectors",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./email": "./src/email/index.ts",
+    "./whatsapp": "./src/whatsapp/index.ts",
+    "./browser": "./src/browser/index.ts",
+    "./filesystem": "./src/filesystem/index.ts"
+  },
+  "dependencies": {
+    "@local-ai-assistant/core": "*"
+  }
+}
