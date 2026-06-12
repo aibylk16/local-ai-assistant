@@ -32,6 +32,12 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button.secondary {
+  background: #eef3f8;
+  color: #17202f;
+  border: 1px solid #c9d3df;
+}
+
 input,
 select {
   width: 100%;
@@ -146,6 +152,34 @@ h2 {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
+}
+
+.action-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+  border: 1px solid #b8d2ea;
+  background: #f5faff;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.action-card p {
+  margin: 4px 0;
+  color: #607087;
+}
+
+.action-card code {
+  color: #244866;
+  overflow-wrap: anywhere;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .warning,

@@ -22,6 +22,34 @@ interface ProviderSettings {
   cloudApproved: Record<ProviderId, boolean>
 }
 
+interface WebAction {
+  id: string
+  label: string
+  url: string
+  reason: string
+}
+
+const WEB_ACTIONS: WebAction[] = [
+  {
+    id: 'youtube',
+    label: 'Open YouTube',
+    url: 'https://www.youtube.com/',
+    reason: 'You asked to open YouTube in the browser.',
+  },
+  {
+    id: 'google',
+    label: 'Open Google',
+    url: 'https://www.google.com/',
+    reason: 'You asked to open Google in the browser.',
+  },
+  {
+    id: 'gmail',
+    label: 'Open Gmail',
+    url: 'https://mail.google.com/',
+    reason: 'You asked to open Gmail in the browser.',
+  },
+]
+
 const COMMON_NAMES = new Set([
   'alexa',
   'siri',
@@ -97,6 +125,15 @@ function mockReply(input: string, identity: Identity): string {
   return `${name} is ready in web mode. I can plan tasks online now, and deeper local actions will be handled by the desktop companion with permission.`
 }
 
+function detectWebAction(input: string): WebAction | null {
+  const lower = input.toLowerCase()
+  if (!/\b(open|launch|go to|start)\b/.test(lower)) return null
+  if (lower.includes('youtube') || lower.includes('you tube')) return WEB_ACTIONS[0] ?? null
+  if (lower.includes('gmail') || lower.includes('mail.google')) return WEB_ACTIONS[2] ?? null
+  if (lower.includes('google')) return WEB_ACTIONS[1] ?? null
+  return null
+}
+
 function App(): JSX.Element {
   const [identity, setIdentity] = React.useState<Identity>(() =>
     loadJson('assistant.identity', DEFAULT_IDENTITY),
@@ -107,6 +144,7 @@ function App(): JSX.Element {
   const [messages, setMessages] = React.useState<Message[]>([])
   const [draft, setDraft] = React.useState('')
   const [notice, setNotice] = React.useState<string | null>(null)
+  const [pendingAction, setPendingAction] = React.useState<WebAction | null>(null)
 
   React.useEffect(() => saveJson('assistant.identity', identity), [identity])
   React.useEffect(() => saveJson('assistant.provider', provider), [provider])
@@ -119,6 +157,19 @@ function App(): JSX.Element {
     if (!text) return
     setDraft('')
     const nextMessages: Message[] = [...messages, { role: 'user', content: text }]
+    const action = detectWebAction(text)
+    if (action) {
+      setPendingAction(action)
+      setMessages([
+        ...nextMessages,
+        {
+          role: 'assistant',
+          content: `${action.reason} Please approve before I open ${action.url}.`,
+        },
+      ])
+      return
+    }
+
     let reply = mockReply(text, identity)
 
     if (provider.provider !== 'mock') {
@@ -133,6 +184,17 @@ function App(): JSX.Element {
     }
 
     setMessages([...nextMessages, { role: 'assistant', content: reply }])
+  }
+
+  const approveWebAction = (): void => {
+    if (!pendingAction) return
+    const action = pendingAction
+    window.open(action.url, '_blank', 'noopener,noreferrer')
+    setMessages((m) => [
+      ...m,
+      { role: 'assistant', content: `Approved. Opening ${action.url} in a new tab.` },
+    ])
+    setPendingAction(null)
   }
 
   const approveCloud = (id: ProviderId): void => {
@@ -225,6 +287,21 @@ function App(): JSX.Element {
             />
             <button onClick={send}>Send</button>
           </div>
+          {pendingAction && (
+            <div className="action-card">
+              <div>
+                <strong>{pendingAction.label}</strong>
+                <p>{pendingAction.reason}</p>
+                <code>{pendingAction.url}</code>
+              </div>
+              <div className="action-buttons">
+                <button onClick={approveWebAction}>Allow</button>
+                <button className="secondary" onClick={() => setPendingAction(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         <aside className="panel">

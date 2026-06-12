@@ -107,6 +107,30 @@ The user wants an online version so they do not need to download a new Windows r
 - Private repository Pages availability depends on the GitHub account/plan.
 - This web preview is mock-only and cannot perform local Windows/Mac automation.
 
+### Permissioned web actions in online preview (by Codex)
+
+**Files changed**
+
+- `apps/web/src/main.tsx`
+- `apps/web/src/styles.css`
+- `README.md`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Added safe web-command detection for browser actions such as opening YouTube, Google, and Gmail.
+- Added a pending action card that asks for explicit user approval before opening an external site.
+- Approved web actions open in a new browser tab with `noopener,noreferrer`.
+
+**Why it changed**
+
+The user expected web-safe commands like "open YouTube" to work in the online version. Browser actions are allowed in the web app as long as they stay inside browser permissions and require approval.
+
+**TODOs / known risks**
+
+- This is rule-based for a few common web actions. A real backend/AI router can expand it later.
+- Local computer actions still require the desktop companion.
+
 ### Windows app artifact workflow (by Codex)
 
 **Files changed**
