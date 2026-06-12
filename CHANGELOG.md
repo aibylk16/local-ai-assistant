@@ -80,6 +80,31 @@ GitHub Actions failed on both Windows and macOS in `packages/core/src/__tests__/
 
 ## 2026-06-12
 
+### Windows app artifact workflow (by Codex)
+
+**Files changed**
+
+- `.github/workflows/build-windows-app.yml`
+- `README.md`
+- `docs/handoffs/2026-06-12-codex-windows-artifact.md`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Added a GitHub Actions workflow that installs dependencies, rebuilds native Electron modules, runs tests, packages the Windows desktop app, and uploads the release output as `local-ai-assistant-windows`.
+- Added README instructions for testing without local install by downloading the GitHub Actions artifact.
+- Added a handoff documenting the workflow, decisions, TODOs, and risks.
+
+**Why it changed**
+
+The user wanted the best way to test without installing project dependencies locally. Building a Windows app artifact on GitHub lets the user download and run the app while keeping install/build work in CI.
+
+**TODOs / known risks**
+
+- Push the workflow and verify the GitHub Actions packaging run.
+- The Windows app artifact is unsigned, so Windows may show a warning before opening.
+- Packaging may reveal Electron Builder issues that the normal build workflow does not catch.
+
 ### Real AI provider setup behind local-only safety (by Claude)
 
 **Files changed**

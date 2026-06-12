@@ -119,6 +119,19 @@ npm run rebuild:native
 npm run dev
 ```
 
+## Testing Without Local Install
+
+If you do not want to install Node dependencies on this PC, use GitHub Actions:
+
+1. Push changes to GitHub.
+2. Open the repository's **Actions** tab.
+3. Wait for **Verify MVP Scaffold** to pass.
+4. Open **Build Windows App Artifact**.
+5. Download the `local-ai-assistant-windows` artifact from the completed run.
+6. Extract it and run the generated Windows app/installer.
+
+The Windows artifact workflow installs dependencies, rebuilds native Electron modules, runs tests, and packages the app on GitHub-hosted Windows. The artifact is unsigned, so Windows may show a warning when opening it.
+
 ### Tests
 
 ```bash
