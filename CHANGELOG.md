@@ -131,6 +131,28 @@ The user expected web-safe commands like "open YouTube" to work in the online ve
 - This is rule-based for a few common web actions. A real backend/AI router can expand it later.
 - Local computer actions still require the desktop companion.
 
+### Email web action alias fix (by Codex)
+
+**Files changed**
+
+- `apps/web/src/main.tsx`
+- `README.md`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Added `open email` / `open mail` as aliases for opening Gmail in the web preview.
+- Added `open outlook` / `open hotmail` support for opening Outlook Mail.
+- Updated README web-preview action examples.
+
+**Why it changed**
+
+The web preview handled `open gmail`, but the user typed `open email`, which was routed to the generic email-planning response instead of the browser action flow.
+
+**TODOs / known risks**
+
+- Future settings should let the user choose their preferred email provider instead of defaulting generic email to Gmail.
+
 ### Windows app artifact workflow (by Codex)
 
 **Files changed**

@@ -26,7 +26,7 @@ Current web preview scope:
 - Wake phrase preview: `Hey <assistant name>`.
 - Female / male / neutral voice-style setting.
 - Mock chat for planning web, email, WhatsApp, Excel, file, and desktop-companion tasks.
-- Permissioned safe web actions for recognized browser commands such as opening YouTube, Google, or Gmail in a new tab.
+- Permissioned safe web actions for recognized browser commands such as opening YouTube, Google, Gmail/email, or Outlook in a new tab.
 - Provider safety toggles showing local-only and cloud-approval concepts.
 
 Important limit: the web app cannot directly control the local computer, local files, WhatsApp Desktop, or Windows/Mac apps. Those actions require the desktop companion with explicit permissions.

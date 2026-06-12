@@ -48,6 +48,12 @@ const WEB_ACTIONS: WebAction[] = [
     url: 'https://mail.google.com/',
     reason: 'You asked to open Gmail in the browser.',
   },
+  {
+    id: 'outlook',
+    label: 'Open Outlook',
+    url: 'https://outlook.live.com/mail/',
+    reason: 'You asked to open Outlook in the browser.',
+  },
 ]
 
 const COMMON_NAMES = new Set([
@@ -130,6 +136,8 @@ function detectWebAction(input: string): WebAction | null {
   if (!/\b(open|launch|go to|start)\b/.test(lower)) return null
   if (lower.includes('youtube') || lower.includes('you tube')) return WEB_ACTIONS[0] ?? null
   if (lower.includes('gmail') || lower.includes('mail.google')) return WEB_ACTIONS[2] ?? null
+  if (lower.includes('outlook') || lower.includes('hotmail')) return WEB_ACTIONS[3] ?? null
+  if (lower.includes('email') || lower.includes('mail')) return WEB_ACTIONS[2] ?? null
   if (lower.includes('google')) return WEB_ACTIONS[1] ?? null
   return null
 }
