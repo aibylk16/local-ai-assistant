@@ -15,14 +15,34 @@ export function sanitizeWorkflowText(text: string): string {
     .trim()
 }
 
+/**
+ * Side-effect verbs that must always require a final confirmation before the
+ * step runs: sending/posting messages, deleting, uploading, submitting forms,
+ * payments/purchases. The check covers both the step kind and the instruction
+ * text so a mislabeled step cannot slip through.
+ */
+const SIDE_EFFECT_RE =
+  /\b(send|sends|sending|post|posts|posting|publish|delete|deletes|deleting|remove permanently|upload|uploads|uploading|submit|submits|submitting|pay|pays|payment|purchase|purchases|buy|order now|transfer money)\b/i
+
+export function stepRequiresFinalConfirmation(step: WorkflowStepInput): boolean {
+  if (step.kind === 'draft_message') return true
+  const text = [step.instruction, step.target].filter(Boolean).join(' ')
+  return SIDE_EFFECT_RE.test(text)
+}
+
 export function sanitizeWorkflowStep(step: WorkflowStepInput): WorkflowStep {
+  // Side-effect steps can never be saved with a weaker policy - an explicit
+  // dataPolicy on the input does not override this.
+  const dataPolicy = stepRequiresFinalConfirmation(step)
+    ? 'requires_final_confirmation'
+    : (step.dataPolicy ?? inferDataPolicy(step))
   return {
     kind: step.kind,
     instruction: sanitizeWorkflowText(step.instruction),
     app: step.app ? sanitizeWorkflowText(step.app) : undefined,
     target: step.target ? sanitizeWorkflowText(step.target) : undefined,
     selectorHint: step.selectorHint ? sanitizeWorkflowText(step.selectorHint) : undefined,
-    dataPolicy: step.dataPolicy ?? inferDataPolicy(step),
+    dataPolicy,
   }
 }
 

@@ -9,6 +9,71 @@ Use this file to record every meaningful project change so Codex, Claude, and th
 - Added core workflow template store, sanitizer, matching, audit hooks, and tests.
 - Documented privacy boundaries so shared learning stores workflow structure, not user data.
 
+### Teaching Mode core layer (by Claude)
+
+**Files changed**
+
+- `packages/core/src/teaching/types.ts` - new. `TeachingSession`, `TeachingStep`
+  (with local-only `rawContext`), `LearnedCorrection`, `WorkflowDraft` (sanitized,
+  with review warnings), `WorkflowPromotionRequest`, `WorkflowPromotionResult`.
+- `packages/core/src/teaching/store.ts` - new. `TeachingSessionStore`: start
+  session, add step, add correction, create sanitized draft, approve draft as
+  private/team/global, get/list sessions, delete session (cascades to steps and
+  corrections). Every operation audit-logged (`teaching.*` actions); team/global
+  promotion without explicit approval is refused and audited; promotion goes
+  through `WorkflowTemplateStore.save` so its sensitive-content block and scope
+  gate still apply. Corrections reopen the session so a stale draft cannot be
+  promoted without a rebuild.
+- `packages/core/src/teaching/index.ts` + `packages/core/src/index.ts` - exports.
+- `packages/core/src/workflows/sanitizer.ts` - strengthened. New
+  `stepRequiresFinalConfirmation()`: steps whose kind or instruction indicates
+  send/post/publish/delete/upload/submit/pay/purchase are ALWAYS stored with
+  `dataPolicy: 'requires_final_confirmation'`, overriding any weaker explicit
+  policy. Applies to both teaching drafts and direct template saves.
+- `packages/core/src/db/schema.ts` - added `teaching_sessions`,
+  `teaching_steps` (with local-only `raw_context` column), and
+  `teaching_corrections` tables (`IF NOT EXISTS`, FK cascade on delete).
+- `packages/core/src/__tests__/teaching.test.ts` - new vitest suite (9 tests):
+  raw context stays local and never reaches drafts/templates; drafts redact
+  emails/phones; team/global promotion requires explicit approval (refusals
+  audited); corrections update the next draft and invalidate the stale one;
+  promoted workflows match later similar tasks; side-effect steps can never be
+  saved without final-confirmation policy (including direct tampered saves);
+  sensitive-content block propagates; sessions list/delete/lock correctly.
+- `docs/teaching-mode.md` - new. The teaching loop, honesty note (workflow
+  learning, NOT model training), privacy boundary table, safety invariants.
+- `docs/teachable-workflows.md` - added implementation pointers, corrections
+  section, and honesty note.
+- `docs/privacy-and-memory.md` - added "Teaching Sessions" section: raw
+  sessions are local-only, user-deletable, audit-logged; promotion requires
+  approval + re-sanitization.
+- `README.md` - added "Teaching Mode (free, no API)" section.
+- `docs/handoffs/2026-06-13-claude-teaching-mode.md` - handoff for Codex.
+
+**Why it changed**
+
+The product direction is a free/no-API teachable AI employee first: the
+assistant should improve from user instructions, repeated tasks, corrections,
+and preferred formats - implemented honestly as teach-and-reuse workflow
+memory, not LLM training. This pass adds the session layer that turns a
+demonstration plus corrections into a sanitized, scoped, approved workflow
+template, on top of the existing `workflow_templates` store from commit
+`7937710`.
+
+**TODOs / known risks**
+
+- Tests not run locally (standing no-local-install policy) - verify the new
+  teaching suite plus the strengthened sanitizer in GitHub Actions.
+- The side-effect detector is keyword-based (English verbs). Non-English
+  instructions won't trigger the policy upgrade - the replay engine must treat
+  the step policy as a floor, not the only check, and the final-confirmation
+  modal remains mandatory for sensitive tool categories regardless.
+- No UI yet: teaching mode is core-only. Next pass wires IPC + a Teaching
+  screen (record steps, review draft warnings, choose scope).
+- Workflow replay/execution engine does not exist yet - matching returns
+  templates, but executing them through desktop automation is future work
+  (roadmap Phase 8) and must go through the existing plan/confirmation flow.
+
 ## 2026-06-10
 
 - Created initial local-first desktop AI assistant project pack.

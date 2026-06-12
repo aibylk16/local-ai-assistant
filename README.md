@@ -9,6 +9,29 @@ Gemini, or connector setup. Users teach repeatable office workflows, the app
 stores sanitized workflow templates, and later users can replay those workflows
 with permission. Cloud AI and official connectors remain optional upgrades.
 
+## Teaching Mode (free, no API)
+
+The assistant improves from user input and work history through a
+**teach-and-reuse system** - honestly, this is workflow and preference
+learning, **not** LLM training. No model weights are updated, and no API key,
+connector, or paid service is required. Storage is local SQLite.
+
+How it works ([docs/teaching-mode.md](docs/teaching-mode.md)):
+
+1. The user teaches a task once (steps, intent, corrections).
+2. The assistant stores a **sanitized workflow draft** - structure only, never
+   message bodies, contacts, IDs, prices, files, or credentials.
+3. The user approves where it can be reused: **private** (this user), **team**
+   (same office), or **global** (fully generic). Team/global require explicit
+   approval.
+4. When a similar task arrives later, the assistant offers: "I know a saved
+   workflow for this. Should I use it?"
+5. Replay still asks permission before opening apps/sites/files and asks final
+   confirmation before any send/post/delete/upload/submit/payment step.
+
+A local LLM (Ollama/LM Studio) or cloud provider remains an optional future
+upgrade - the teach-and-reuse loop must keep working without one.
+
 ## Long-Term Product Direction
 
 The desktop MVP is phase one of a larger product: a full **AI employee/assistant**, not only a desktop chat app.

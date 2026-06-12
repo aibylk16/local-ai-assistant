@@ -40,6 +40,25 @@ required for the basic teach-and-reuse workflow loop.
 7. Future tasks are matched against saved workflow templates.
 8. Assistant asks permission before replaying or adapting the workflow.
 
+This loop is implemented by `TeachingSessionStore`
+(`packages/core/src/teaching/`) feeding `WorkflowTemplateStore`
+(`packages/core/src/workflows/`). See [teaching-mode.md](teaching-mode.md) for
+the session model, corrections, draft warnings, and promotion rules.
+
+## Corrections
+
+Users can correct the assistant during or after teaching ("no - filter by last
+month first"). Corrections are stored with the session and applied when the
+draft is rebuilt. A correction reopens the session so a stale draft can never
+be promoted by accident - what the user approved is always what gets saved.
+
+## Honesty note
+
+This is workflow/preference learning, not LLM training. No model weights are
+updated. The same teach-and-reuse loop will later be able to feed an optional
+local model (Ollama/LM Studio) or cloud provider, but the baseline must keep
+working with neither.
+
 ## What Can Be Stored
 
 Workflow memory may store:

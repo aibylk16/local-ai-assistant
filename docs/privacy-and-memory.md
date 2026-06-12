@@ -60,6 +60,26 @@ The assistant may reuse workflow structure across users, but it must not reuse
 another user's personal or business content. Promoting private learning into
 team/global learning requires sanitization and explicit approval.
 
+## Teaching Sessions
+
+Teaching Mode (see [teaching-mode.md](teaching-mode.md)) records raw sessions
+while the user teaches a task. These raw sessions:
+
+- May contain temporary user context (`rawContext`) - e.g. "this is the
+  supplier mail I mean" - so the user can review what they taught.
+- Are LOCAL-ONLY: raw context never enters a workflow draft, never enters a
+  template of any scope, and never syncs anywhere.
+- Are user-controlled: sessions can be listed and deleted, and deleting a
+  session removes its steps and corrections.
+- Are audit-logged: session start, steps, corrections, drafts, promotions, and
+  blocked promotions all write audit entries.
+
+Promotion from a teaching session into team/global workflow memory requires
+explicit user approval, and the sanitized draft is independently re-checked by
+the workflow store's sensitive-content block before saving. Side-effect steps
+(send/post/delete/upload/submit/payment) always require final confirmation at
+replay time, no matter what the session recorded.
+
 ## Cloud AI Safety
 
 If using a cloud AI model:

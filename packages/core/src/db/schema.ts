@@ -126,9 +126,46 @@ export function applySchema(db: DB): void {
       updated_at TEXT NOT NULL
     );
 
+    -- Teaching Mode: raw sessions stay LOCAL-ONLY. Only the sanitized draft
+    -- (no raw_context) can ever be promoted into workflow_templates.
+    CREATE TABLE IF NOT EXISTS teaching_sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      goal TEXT NOT NULL,
+      status TEXT NOT NULL,       -- 'recording' | 'drafted' | 'promoted' | 'discarded'
+      draft TEXT                  -- JSON sanitized WorkflowDraft; null until drafted
+    );
+    CREATE INDEX IF NOT EXISTS idx_teaching_status ON teaching_sessions(status);
+
+    CREATE TABLE IF NOT EXISTS teaching_steps (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      position INTEGER NOT NULL,
+      kind TEXT NOT NULL,
+      instruction TEXT NOT NULL,
+      app TEXT,
+      target TEXT,
+      selector_hint TEXT,
+      raw_context TEXT,           -- temporary user context; never copied into drafts
+      FOREIGN KEY(session_id) REFERENCES teaching_sessions(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_teaching_steps_session ON teaching_steps(session_id, position);
+
+    CREATE TABLE IF NOT EXISTS teaching_corrections (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      step_position INTEGER,      -- null = whole-workflow correction
+      instruction TEXT NOT NULL,
+      FOREIGN KEY(session_id) REFERENCES teaching_sessions(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_teaching_corrections_session ON teaching_corrections(session_id);
+
     -- Assistant identity settings (local-only; cloud sync is a future, opt-in step).
     -- Keys:
-    --   configured       -- '1' | '0'  (default '0' — no built-in assistant name)
+    --   configured       -- '1' | '0'  (default '0' - no built-in assistant name)
     --   assistant_name   -- user/company-chosen name; wake phrase derives from it
     --   voice_style      -- 'female' | 'male' | 'neutral'  (default 'neutral')
     --   company_label    -- optional display label
