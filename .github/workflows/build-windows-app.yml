@@ -1,4 +1,4 @@
-name: Build Windows App Artifact
+name: Build Windows Runnable Artifact
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-windows:
-    name: Build Windows desktop app
+    name: Build Windows runnable app bundle
     runs-on: windows-latest
 
     steps:
@@ -29,15 +29,51 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Package Windows app
-        run: npm run package:win -w apps/desktop
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Build app
+        run: npm run build
+
+      - name: Prepare runnable Windows bundle
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force windows-runner | Out-Null
+          Copy-Item package.json windows-runner\
+          if (Test-Path package-lock.json) { Copy-Item package-lock.json windows-runner\ }
+          Copy-Item tsconfig.base.json windows-runner\
+          Copy-Item vitest.config.ts windows-runner\
+          Copy-Item apps windows-runner\apps -Recurse
+          Copy-Item packages windows-runner\packages -Recurse
+          Copy-Item node_modules windows-runner\node_modules -Recurse
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          echo Starting Local AI Assistant...
+          echo.
+          echo Optional cloud keys:
+          echo   set OPENAI_API_KEY=your_key
+          echo   set ANTHROPIC_API_KEY=your_key
+          echo.
+          npm.cmd run dev
+          pause
+          '@ | Set-Content -Path windows-runner\START_LOCAL_AI_ASSISTANT.cmd -Encoding ASCII
+          @'
+          Local AI Assistant - Windows runnable bundle
+
+          1. Extract this zip.
+          2. Double-click START_LOCAL_AI_ASSISTANT.cmd.
+          3. The app runs in dev mode with dependencies already included.
+
+          Notes:
+          - Node.js must be installed on the PC.
+          - No npm install is needed.
+          - Cloud providers still require OPENAI_API_KEY or ANTHROPIC_API_KEY.
+          - Local mock provider works without keys.
+          '@ | Set-Content -Path windows-runner\README-RUN.txt -Encoding ASCII
 
       - name: Upload Windows app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: local-ai-assistant-windows
-          path: apps/desktop/release/**
+          name: local-ai-assistant-windows-runner
+          path: windows-runner/**
           if-no-files-found: error
           retention-days: 7

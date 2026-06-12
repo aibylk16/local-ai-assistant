@@ -126,6 +126,31 @@ The `Build Windows App Artifact` workflow failed during `Package Windows app` be
 
 - Re-run the Windows artifact workflow after pushing this fix.
 
+### Windows runnable artifact workflow fix (by Codex)
+
+**Files changed**
+
+- `.github/workflows/build-windows-app.yml`
+- `README.md`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Changed the Windows artifact workflow from Electron Builder installer packaging to a GitHub-built runnable bundle.
+- The workflow now installs dependencies, rebuilds native modules, runs tests, builds the app, copies source plus `node_modules` into `windows-runner`, and uploads `local-ai-assistant-windows-runner`.
+- Added `START_LOCAL_AI_ASSISTANT.cmd` generation inside the artifact so the user can launch without local `npm install`.
+- Updated README artifact instructions.
+
+**Why it changed**
+
+Electron Builder failed in GitHub Actions while packaging NSIS because `7zip-bin` was not found in the expected workspace path. The runnable bundle avoids installer packaging for now while still letting the user test the app without local dependency installation.
+
+**TODOs / known risks**
+
+- Re-run the artifact workflow and download `local-ai-assistant-windows-runner` if it passes.
+- The downloaded bundle still requires Node.js on the PC.
+- Later, revisit proper signed installer packaging after the app MVP is stable.
+
 ### Real AI provider setup behind local-only safety (by Claude)
 
 **Files changed**

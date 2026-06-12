@@ -126,11 +126,12 @@ If you do not want to install Node dependencies on this PC, use GitHub Actions:
 1. Push changes to GitHub.
 2. Open the repository's **Actions** tab.
 3. Wait for **Verify MVP Scaffold** to pass.
-4. Open **Build Windows App Artifact**.
-5. Download the `local-ai-assistant-windows` artifact from the completed run.
-6. Extract it and run the generated Windows app/installer.
+4. Open **Build Windows Runnable Artifact**.
+5. Download the `local-ai-assistant-windows-runner` artifact from the completed run.
+6. Extract it.
+7. Double-click `START_LOCAL_AI_ASSISTANT.cmd`.
 
-The Windows artifact workflow installs dependencies, rebuilds native Electron modules, runs tests, and packages the app on GitHub-hosted Windows. The artifact is unsigned, so Windows may show a warning when opening it.
+The Windows artifact workflow installs dependencies, rebuilds native Electron modules, runs tests, builds the app, and uploads a runnable dev-mode bundle from GitHub-hosted Windows. Node.js must still be installed on the PC, but no `npm install` is needed locally.
 
 ### Tests
 
