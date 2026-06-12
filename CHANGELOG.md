@@ -151,6 +151,28 @@ Electron Builder failed in GitHub Actions while packaging NSIS because `7zip-bin
 - The downloaded bundle still requires Node.js on the PC.
 - Later, revisit proper signed installer packaging after the app MVP is stable.
 
+### Windows runner hidden-bin fix (by Codex)
+
+**Files changed**
+
+- `.github/workflows/build-windows-app.yml`
+- `README.md`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Added `include-hidden-files: true` to the artifact upload so `node_modules/.bin` command shims are included.
+- Added a launcher guard that clearly reports when `node_modules/.bin/electron-vite.cmd` is missing from the downloaded artifact.
+- Added README troubleshooting note for the `electron-vite is not recognized` error.
+
+**Why it changed**
+
+The first runnable artifact downloaded successfully but failed locally because `electron-vite` was not found. GitHub artifact upload skipped hidden paths by default, which removed the `.bin` command shims required by npm workspace scripts.
+
+**TODOs / known risks**
+
+- Push this fix, wait for a new green artifact run, then download the new `local-ai-assistant-windows-runner`.
+
 ### Real AI provider setup behind local-only safety (by Claude)
 
 **Files changed**

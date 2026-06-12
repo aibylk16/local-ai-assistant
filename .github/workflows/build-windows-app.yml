@@ -53,7 +53,15 @@ jobs:
           echo   set OPENAI_API_KEY=your_key
           echo   set ANTHROPIC_API_KEY=your_key
           echo.
-          npm.cmd run dev
+          if exist "%~dp0node_modules\.bin\electron-vite.cmd" (
+            npm.cmd run dev
+          ) else (
+            echo ERROR: node_modules\.bin is missing from this artifact.
+            echo Please download a newer local-ai-assistant-windows-runner artifact.
+            echo.
+            pause
+            exit /b 1
+          )
           pause
           '@ | Set-Content -Path windows-runner\START_LOCAL_AI_ASSISTANT.cmd -Encoding ASCII
           @'
@@ -76,4 +84,5 @@ jobs:
           name: local-ai-assistant-windows-runner
           path: windows-runner/**
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 7

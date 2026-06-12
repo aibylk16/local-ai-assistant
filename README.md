@@ -133,6 +133,8 @@ If you do not want to install Node dependencies on this PC, use GitHub Actions:
 
 The Windows artifact workflow installs dependencies, rebuilds native Electron modules, runs tests, builds the app, and uploads a runnable dev-mode bundle from GitHub-hosted Windows. Node.js must still be installed on the PC, but no `npm install` is needed locally.
 
+If the command window says `electron-vite is not recognized`, download a newer artifact. The runner artifact must include hidden `node_modules/.bin` command shims.
+
 ### Tests
 
 ```bash
