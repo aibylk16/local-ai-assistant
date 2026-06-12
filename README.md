@@ -4,6 +4,11 @@ This is a local-first desktop AI assistant plan for Windows and macOS.
 
 Goal: build an assistant that can understand text and voice commands, ask permission before acting, work in the background, learn from approved activity, remember useful preferences, monitor missed emails/messages, and keep user data private.
 
+Current direction: the default product should work without OpenAI, Claude,
+Gemini, or connector setup. Users teach repeatable office workflows, the app
+stores sanitized workflow templates, and later users can replay those workflows
+with permission. Cloud AI and official connectors remain optional upgrades.
+
 ## Long-Term Product Direction
 
 The desktop MVP is phase one of a larger product: a full **AI employee/assistant**, not only a desktop chat app.

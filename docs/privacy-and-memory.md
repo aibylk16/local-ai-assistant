@@ -11,6 +11,7 @@ The assistant should learn helpful things such as:
 - Pending tasks.
 - Response style.
 - Important projects.
+- Sanitized workflow templates that can be reused without private data.
 
 ## What Not To Store Automatically
 
@@ -22,6 +23,9 @@ Do not automatically store:
 - Government ID numbers.
 - Private health/financial details unless user explicitly saves them.
 - Full chat history unless user explicitly allows it.
+- Email or WhatsApp message bodies in shared workflow learning.
+- Customer names, phone numbers, exact order IDs, invoice IDs, or file contents
+  in team/global workflow templates.
 
 ## Storage
 
@@ -44,6 +48,18 @@ The app must provide:
 - Export all data.
 - Delete all data.
 
+## Workflow Learning Boundaries
+
+Workflow learning is split into three scopes:
+
+- Private: user-specific memory, visible only to that user.
+- Team: reusable office workflow, approved for the organization.
+- Global: generic template with no user or company data.
+
+The assistant may reuse workflow structure across users, but it must not reuse
+another user's personal or business content. Promoting private learning into
+team/global learning requires sanitization and explicit approval.
+
 ## Cloud AI Safety
 
 If using a cloud AI model:
@@ -52,4 +68,3 @@ If using a cloud AI model:
 - Redact sensitive values where possible.
 - Show a setting for "local-only mode".
 - Make cloud use visible in the UI.
-

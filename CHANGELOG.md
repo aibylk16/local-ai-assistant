@@ -2,6 +2,13 @@
 
 Use this file to record every meaningful project change so Codex, Claude, and the user can stay aligned.
 
+## 2026-06-13
+
+- Added no-API teachable workflow direction for repeatable office tasks.
+- Added `workflow_templates` storage for sanitized private/team/global reusable workflows.
+- Added core workflow template store, sanitizer, matching, audit hooks, and tests.
+- Documented privacy boundaries so shared learning stores workflow structure, not user data.
+
 ## 2026-06-10
 
 - Created initial local-first desktop AI assistant project pack.

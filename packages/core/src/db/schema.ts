@@ -46,6 +46,25 @@ export function applySchema(db: DB): void {
     CREATE INDEX IF NOT EXISTS idx_memory_kind ON memory(kind);
     CREATE INDEX IF NOT EXISTS idx_memory_updated ON memory(updated_at DESC);
 
+    CREATE TABLE IF NOT EXISTS workflow_templates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      name TEXT NOT NULL,
+      description TEXT NOT NULL,
+      scope TEXT NOT NULL,          -- 'private' | 'team' | 'global'
+      trigger_phrases TEXT NOT NULL, -- JSON array of generic phrases
+      steps TEXT NOT NULL,          -- JSON array of sanitized workflow steps
+      apps TEXT NOT NULL,           -- JSON array of app/site names
+      tags TEXT NOT NULL,           -- JSON array
+      requires_approval INTEGER NOT NULL DEFAULT 1,
+      approved_for_reuse INTEGER NOT NULL DEFAULT 0,
+      source_user_id TEXT,
+      source_detail TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_workflow_scope ON workflow_templates(scope);
+    CREATE INDEX IF NOT EXISTS idx_workflow_updated ON workflow_templates(updated_at DESC);
+
     CREATE TABLE IF NOT EXISTS tasks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       created_at TEXT NOT NULL,
