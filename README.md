@@ -16,6 +16,20 @@ The desktop MVP is phase one of a larger product: a full **AI employee/assistant
 - **Male/female/neutral voice style:** chosen during setup, editable anytime, used for TTS when voice output ships.
 - The permission, confirmation, audit-log, privacy, and local-only safeguards below apply to **every** future surface, not just the desktop MVP. No phase may weaken them.
 
+## Online Web Preview
+
+The project includes a first browser-based companion under `apps/web`. It is intended for online access without repeatedly downloading the desktop runner.
+
+Current web preview scope:
+
+- Custom assistant name.
+- Wake phrase preview: `Hey <assistant name>`.
+- Female / male / neutral voice-style setting.
+- Mock chat for planning web, email, WhatsApp, Excel, file, and desktop-companion tasks.
+- Provider safety toggles showing local-only and cloud-approval concepts.
+
+Important limit: the web app cannot directly control the local computer, local files, WhatsApp Desktop, or Windows/Mac apps. Those actions require the desktop companion with explicit permissions.
+
 ## Important Reality Check
 
 The assistant can be powerful, but it must have clear permission and privacy controls.

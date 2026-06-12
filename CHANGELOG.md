@@ -80,6 +80,33 @@ GitHub Actions failed on both Windows and macOS in `packages/core/src/__tests__/
 
 ## 2026-06-12
 
+### Online web preview + GitHub Pages workflow (by Codex)
+
+**Files changed**
+
+- `apps/web/*`
+- `.github/workflows/deploy-web.yml`
+- `README.md`
+- `docs/handoffs/2026-06-12-codex-web-preview.md`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Added a lightweight React/Vite web companion app for online browser access.
+- Added custom assistant identity fields, wake phrase preview, voice-style selection, provider safety toggles, and mock chat.
+- Added a GitHub Pages deployment workflow named `Deploy Web Assistant`.
+- Documented that the web app is an online companion and that local computer control still belongs to the desktop companion.
+
+**Why it changed**
+
+The user wants an online version so they do not need to download a new Windows runner for every test. GitHub Pages is the fastest safe path to an always-available browser preview without adding a backend or hosting account.
+
+**TODOs / known risks**
+
+- GitHub Pages may need to be enabled in repository settings with GitHub Actions as the source.
+- Private repository Pages availability depends on the GitHub account/plan.
+- This web preview is mock-only and cannot perform local Windows/Mac automation.
+
 ### Windows app artifact workflow (by Codex)
 
 **Files changed**
