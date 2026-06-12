@@ -105,6 +105,27 @@ The user wanted the best way to test without installing project dependencies loc
 - The Windows app artifact is unsigned, so Windows may show a warning before opening.
 - Packaging may reveal Electron Builder issues that the normal build workflow does not catch.
 
+### Windows packaging metadata fix (by Codex)
+
+**Files changed**
+
+- `apps/desktop/package.json`
+- `CHANGELOG.md`
+
+**What changed**
+
+- Pinned Electron to `31.0.0` instead of `^31.0.0`.
+- Added `build.electronVersion: "31.0.0"` so Electron Builder can package in GitHub Actions.
+- Added package `description` and `author` metadata for Electron Builder.
+
+**Why it changed**
+
+The `Build Windows App Artifact` workflow failed during `Package Windows app` because Electron Builder could not compute the Electron version from installed modules when the project declared Electron as a non-fixed range.
+
+**TODOs / known risks**
+
+- Re-run the Windows artifact workflow after pushing this fix.
+
 ### Real AI provider setup behind local-only safety (by Claude)
 
 **Files changed**
