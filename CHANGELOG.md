@@ -223,6 +223,66 @@ Memory items are never appended to the prompt unless the user opts into sharing.
   future code path that injects memory MUST honor it. The test pins this so a regression that
   unconditionally sends memory will fail.
 
+### Hybrid AI-employee direction + assistant identity scaffold (by Claude)
+
+**Files changed**
+
+- `docs/product-roadmap.md` — new. 11-phase roadmap from local desktop MVP to hybrid
+  AI employee (identity wizard, web/PWA, cloud backend, email/calendar, sheets,
+  WhatsApp Business, automation, wake mode with custom name, task queue, enterprise).
+- `docs/hybrid-architecture.md` — new. Web app + desktop companion + cloud backend +
+  connector services; local vs cloud memory, sync model, permission model, audit model,
+  identity/wake-name model, voice-style model, WhatsApp limits, Excel/file handling,
+  security boundaries.
+- `docs/assistant-identity.md` — new. Why assistant names must be customizable (office
+  cross-talk, ecosystem collisions), wake-phrase behavior, voice styles, common-name
+  warning logic, storage/audit model, setup-wizard plan, no-always-listening rule.
+- `docs/future-package-structure.md` — new. Target monorepo layout (`apps/web`,
+  `apps/desktop`, `apps/api`, `packages/core|connectors|automation|shared-ui|voice|identity`)
+  plus migration rules.
+- `README.md` — added **Long-Term Product Direction** section (hybrid architecture,
+  custom assistant identity/wake name, voice styles, no fixed global assistant name).
+- `CLAUDE_BUILD_PROMPT.md` — added hybrid-architecture rules for all future work
+  (don't build everything in Electron, configurable identity, custom wake name,
+  configurable voice style, no always-listening without permission+indicator+audit).
+- `packages/core/src/identity/types.ts` — new. `AssistantIdentity`,
+  `AssistantIdentityInput`, `VoiceStyle` ('female' | 'male' | 'neutral'),
+  `NameCheckResult`.
+- `packages/core/src/identity/common-names.ts` — new. `checkAssistantName()` validation
+  (empty/too-long/control-chars rejected) with warnings for ecosystem names
+  (alexa/siri/google/cortana/bixby/echo) and generic names (computer/assistant/ai/hey);
+  `wakePhraseFor()` derives "Hey <name>".
+- `packages/core/src/identity/store.ts` — new. `AssistantIdentityStore`: SQLite-backed,
+  local-only, defaults to unconfigured/neutral with NO built-in default name; every
+  `setIdentity()` writes an `identity.update` audit entry with before/after values and
+  any overridden common-name warning.
+- `packages/core/src/identity/index.ts` + `packages/core/src/index.ts` — exports.
+- `packages/core/src/db/schema.ts` — added `identity_settings` key/value table
+  (`IF NOT EXISTS`, no schema-version bump — same upgrade pattern as `provider_settings`).
+- `packages/core/src/__tests__/identity.test.ts` — new vitest suite: name validation,
+  common-name warnings, wake-phrase derivation, store defaults, persistence, editing,
+  validation errors, audit entries (including overridden-warning capture).
+- `docs/handoffs/2026-06-12-claude-hybrid-ai-employee-roadmap.md` — handoff for Codex.
+
+**Why it changed**
+
+The product direction was upgraded: the goal is a full AI employee/assistant working
+across web, desktop, email, sheets, files, browser, reminders, WhatsApp, and voice — on
+a hybrid architecture — rather than a desktop-only chat app. A customizable assistant
+name is now a product requirement because a fixed global name would make every
+assistant in an office respond to the same wake command. This pass documents the
+direction and scaffolds only the first safe step: a local-only identity settings model
+with no UI, no wake mode, no cloud backend, and no new monitoring.
+
+**TODOs / known risks**
+
+- Tests not run locally (no `node_modules` on this PC) — verify the new identity suite
+  in GitHub Actions CI.
+- The identity store is not yet wired into the desktop app (no IPC, no UI). Phase 2
+  (setup wizard + Settings screen) does that wiring.
+- Always-listening wake mode remains intentionally unimplemented; rules for adding it
+  later are in `docs/assistant-identity.md`.
+
 ## Change Log Rules
 
 When any assistant or developer changes the project, add:

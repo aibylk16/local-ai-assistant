@@ -11,6 +11,30 @@ Before you start, read and preserve the intent of:
 - `docs/permissions.md`
 - `docs/privacy-and-memory.md`
 - `docs/whatsapp-email-plan.md`
+- `docs/product-roadmap.md`
+- `docs/hybrid-architecture.md`
+- `docs/assistant-identity.md`
+- `docs/future-package-structure.md`
+
+## Hybrid-architecture rules for all future work
+
+The product direction is a hybrid AI employee (web app + desktop companion + cloud
+backend + connectors), not a desktop-only app. All future work must follow these rules:
+
+1. **Follow the hybrid architecture** in `docs/hybrid-architecture.md`. Do not build
+   everything only inside Electron — code needed by more than one surface belongs in
+   `packages/*` (see `docs/future-package-structure.md`).
+2. **Assistant identity must be configurable.** No fixed global assistant name. The
+   user/company chooses the name; the wake phrase is "Hey <assistant name>". Use the
+   `AssistantIdentity` model in `packages/core/src/identity/`.
+3. **Wake mode must use the configured custom name** and ignore voice commands that do
+   not match it. Warn on common/colliding names (Alexa, Siri, Google, Computer, ...).
+4. **Voice style (female / male / neutral) must be user/company configurable**, stored
+   with the identity, editable anytime, and used for TTS when voice output ships.
+5. **No always-listening mode** without ALL of: explicit opt-in permission, a visible
+   persistent listening indicator, a mute/pause control, and audit log entries. No raw
+   audio recording or retention by default.
+6. Identity and settings changes must be written to the audit log.
 
 After every meaningful change, update `CHANGELOG.md` with files changed, what changed, why it changed, and any TODOs/risks. This is required because Codex and Claude may both work on the same project.
 

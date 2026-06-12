@@ -106,6 +106,18 @@ export function applySchema(db: DB): void {
       value TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+
+    -- Assistant identity settings (local-only; cloud sync is a future, opt-in step).
+    -- Keys:
+    --   configured       -- '1' | '0'  (default '0' — no built-in assistant name)
+    --   assistant_name   -- user/company-chosen name; wake phrase derives from it
+    --   voice_style      -- 'female' | 'male' | 'neutral'  (default 'neutral')
+    --   company_label    -- optional display label
+    CREATE TABLE IF NOT EXISTS identity_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `)
 
   const current = db

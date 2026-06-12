@@ -4,6 +4,18 @@ This is a local-first desktop AI assistant plan for Windows and macOS.
 
 Goal: build an assistant that can understand text and voice commands, ask permission before acting, work in the background, learn from approved activity, remember useful preferences, monitor missed emails/messages, and keep user data private.
 
+## Long-Term Product Direction
+
+The desktop MVP is phase one of a larger product: a full **AI employee/assistant**, not only a desktop chat app.
+
+**AI Employee = Web app + Desktop companion + Cloud backend + connectors.**
+
+- **Hybrid architecture:** a web app for online access, a desktop companion for local computer control, a cloud backend for accounts/AI/task queue/connectors/secure sync, and a local-first/private mode for sensitive desktop tasks. See [docs/hybrid-architecture.md](docs/hybrid-architecture.md).
+- **Target capabilities over time:** email, calendar, Excel/Google Sheets, files/folders, browser, reports, reminders/tasks, daily follow-ups, WhatsApp (within honest platform limits), voice/text commands, and permission-based automation. See [docs/product-roadmap.md](docs/product-roadmap.md) for the phased plan.
+- **Custom assistant identity and wake name:** each user/company names their own assistant (e.g. Tara, Nova, Riva); the wake phrase becomes "Hey &lt;assistant name&gt;". There is **no fixed global assistant name** — in an office, a shared name would wake every assistant in the room. See [docs/assistant-identity.md](docs/assistant-identity.md).
+- **Male/female/neutral voice style:** chosen during setup, editable anytime, used for TTS when voice output ships.
+- The permission, confirmation, audit-log, privacy, and local-only safeguards below apply to **every** future surface, not just the desktop MVP. No phase may weaken them.
+
 ## Important Reality Check
 
 The assistant can be powerful, but it must have clear permission and privacy controls.
