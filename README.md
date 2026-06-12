@@ -134,15 +134,45 @@ npm run package:win -w apps/desktop
 npm run package:mac -w apps/desktop
 ```
 
-### Adding real providers later
+### AI provider setup
 
-The MVP runs in local-only mode against a `MockProvider` and a `MockEmailConnector` so the full
-permission/audit/memory flow can be exercised without any account or cloud key. To plug in real
-services, implement the documented interfaces — each placeholder file lists the exact steps:
+The MVP ships three providers, all wired behind the existing `ModelProvider` interface:
 
-- **Anthropic (Claude) / OpenAI:** implement `ModelProvider` (`packages/core/src/providers/types.ts`).
-  Add a UI toggle that disables `localOnlyMode`. Before the first call, show the
-  `dataSentNotice` from `ProviderInfo` in a confirmation modal.
+| Provider                 | Local? | Default? | Notes                                                                       |
+| ------------------------ | ------ | -------- | --------------------------------------------------------------------------- |
+| Local mock (offline)     | yes    | yes      | Keyword-heuristic responses. Nothing leaves the machine.                    |
+| OpenAI                   | no     | no       | Reads `OPENAI_API_KEY`. Disabled until the user approves the data notice.   |
+| Anthropic (Claude)       | no     | no       | Reads `ANTHROPIC_API_KEY`. Disabled until the user approves the data notice.|
+
+To enable a cloud provider:
+
+1. Set the relevant API key in the environment **before** launching the app:
+   ```bash
+   # PowerShell
+   $env:OPENAI_API_KEY = "sk-..."
+   $env:ANTHROPIC_API_KEY = "sk-ant-..."
+   npm run dev
+   ```
+   The keys are read once at startup. They are **not** persisted to disk by the app.
+2. Open **Settings → AI Provider** in the desktop UI.
+3. Click *Use this* on the provider you want. The app shows a confirmation modal with the
+   exact data-sent notice and the API origin (`api.openai.com` / `api.anthropic.com`).
+4. After approval, turn **Local-only mode** *off*. Until this master kill switch is off, every
+   cloud call still fails closed.
+5. Cloud approvals are written to the audit log (`provider.cloud.approve`). Approval can be
+   revoked at any time.
+
+Memory items are **never** included in the prompt sent to a provider unless the user explicitly
+turns on *Share memory with provider* in the same screen. Default is OFF.
+
+If a key is missing, the chat reply shows a "Provider error (missing_api_key)" line instead of
+a silent failure — set the env var and restart.
+
+### Adding real connectors later
+
+To plug in real services, implement the documented interfaces — each placeholder file lists the
+exact steps:
+
 - **Gmail:** `packages/connectors/src/email/gmail.ts` — OAuth2 with `gmail.readonly` /
   `gmail.send`, refresh token in OS keychain via `safeStorage`.
 - **Outlook / Microsoft Graph:** `packages/connectors/src/email/graph.ts` — MSAL OAuth2 with

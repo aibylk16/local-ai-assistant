@@ -32,13 +32,34 @@ export function ChatScreen({ onChange }: { onChange: () => void }): JSX.Element 
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }))
       const r = (await api.agent.turn({ text, history })) as {
-        reply: string
+        ok: boolean
+        reply?: string
         pendingPlan?: PendingPlan
         permissionBlocked?: string[]
+        providerError?: { code: string; message: string }
+      }
+      if (!r.ok || r.providerError) {
+        const err = r.providerError
+        const help =
+          err?.code === 'not_approved'
+            ? ' Open Settings → AI Provider and approve the data notice.'
+            : err?.code === 'local_only_mode'
+              ? ' Disable Local-only mode in Settings → AI Provider, or switch back to the Local mock.'
+              : err?.code === 'missing_api_key'
+                ? ' Set the API key environment variable, then restart the app.'
+                : ''
+        setMessages((m) => [
+          ...m,
+          {
+            role: 'assistant',
+            content: `Provider error (${err?.code ?? 'error'}): ${err?.message ?? 'Unknown'}.${help}`,
+          },
+        ])
+        return
       }
       setMessages((m) => [
         ...m,
-        { role: 'assistant', content: r.reply, ...(r.permissionBlocked && { blocked: r.permissionBlocked }) },
+        { role: 'assistant', content: r.reply ?? '', ...(r.permissionBlocked && { blocked: r.permissionBlocked }) },
       ])
       if (r.pendingPlan) setPlan(r.pendingPlan)
     } finally {

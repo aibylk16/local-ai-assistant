@@ -78,6 +78,58 @@ GitHub Actions failed on both Windows and macOS in `packages/core/src/__tests__/
 
 - Re-run GitHub Actions after pushing this fix.
 
+## 2026-06-12
+
+### Real AI provider setup behind local-only safety (by Claude)
+
+**Files changed**
+
+- `packages/core/src/db/schema.ts` — added `provider_settings` key/value table.
+- `packages/core/src/providers/` — new files:
+  - `errors.ts` (`MissingApiKeyError`, `CloudNotApprovedError`, `LocalOnlyModeBlockedError`, `ProviderHttpError`)
+  - `openai.ts` (`OpenAIProvider`, model default `gpt-4o-mini`, never throws in constructor)
+  - `anthropic.ts` (`AnthropicProvider`, model default `claude-haiku-4-5-20251001`)
+  - `settings-store.ts` (`ProviderSettingsStore`: selected provider, per-provider cloud-approval flag, local-only toggle, memory-sharing toggle — all SQLite-persisted)
+  - `managed.ts` (`ManagedProvider`: the only `ModelProvider` the orchestrator talks to — enforces approval + local-only at every call, writes audit on block/call/error)
+- `packages/core/src/providers/types.ts` — added `ProviderId`, `requiresApproval`, `apiOrigin`, `apiKeyEnvVar`, optional `hasApiKey()`.
+- `packages/core/src/providers/mock.ts` — added `requiresApproval: false` and `hasApiKey(): true`.
+- `packages/core/src/agent/orchestrator.ts` — `localOnlyMode` now accepts `boolean | (() => boolean)`; added `memorySharing` option (default false); audit `chat.turn` records both flags.
+- `packages/core/src/__tests__/providers.test.ts` — new vitest suite covering: defaults, cloud blocked without approval, cloud blocked under local-only, success after both, `MissingApiKeyError` never reaches network, audit trail for approve/revoke, and memory-not-sent guarantees.
+- `apps/desktop/src/main/services.ts` — builds the three-provider registry from env-var keys, wraps with `ManagedProvider`, hands the orchestrator getter functions for local-only and memory-sharing.
+- `apps/desktop/src/main/ipc.ts` — new channels: `provider:list`, `provider:settings`, `provider:select`, `provider:approveCloud`, `provider:revokeCloud`, `provider:setLocalOnly`, `provider:setMemorySharing`. `agent:turn` now returns `{ ok, providerError? }` so cloud errors surface in the UI instead of crashing the renderer.
+- `apps/desktop/src/preload/index.ts` + `apps/desktop/src/renderer/src/api.ts` — exposed the new channels.
+- `apps/desktop/src/renderer/src/components/Sidebar.tsx` — added the *AI Provider* item.
+- `apps/desktop/src/renderer/src/App.tsx` — bootstrap now includes `providerSettings`; routes `providers` screen.
+- `apps/desktop/src/renderer/src/pages/Providers.tsx` — new screen with provider radio, key-detected indicator, data-sent notice, confirmation modal before approval, *Local-only mode* and *Share memory* toggles, *Revoke approval* button.
+- `apps/desktop/src/renderer/src/pages/Chat.tsx` — handles `providerError` codes (`not_approved`, `local_only_mode`, `missing_api_key`) with actionable nudges to the AI Provider screen.
+- `README.md` — new *AI provider setup* section with env-var instructions and the approval flow.
+- `docs/handoffs/2026-06-12-claude-ai-provider.md` — handoff for Codex.
+
+**Why it changed**
+
+The MVP previously hardcoded `localOnlyMode = true` and ran the `MockProvider` only. This pass
+implements the OpenAI and Anthropic adapters behind the same `ModelProvider` interface, behind a
+mandatory approval gate. Selecting a cloud provider is harmless on its own — calls still fail
+closed until (a) the user explicitly approves the data-sent notice (recorded as
+`provider.cloud.approve` in the audit log) AND (b) the user explicitly turns off Local-only mode.
+Memory items are never appended to the prompt unless the user opts into sharing.
+
+**TODOs / known risks**
+
+- API keys are read from `process.env` at startup only. If the user wants in-app key entry, the
+  next pass should add a Settings UI that writes to `safeStorage` (do NOT add a plain-text
+  settings file). Surface the keychain failure path explicitly.
+- The CSP in `renderer/index.html` is `connect-src 'self'`, which is correct because the network
+  calls happen in the main process. Do not loosen it.
+- `gpt-4o-mini` and `claude-haiku-4-5-20251001` are the model defaults. If a future model id
+  diverges, surface the override (currently constructor-only) in the UI.
+- Cloud providers currently never propose tools (`suggestedTool` is always undefined), so cloud
+  chat is conversation-only. A future pass should map provider tool-use to the
+  `ToolPlan` / `ConfirmationModal` flow without bypassing the permission engine.
+- Memory injection is not wired in even when `memorySharing` is true — the flag exists so any
+  future code path that injects memory MUST honor it. The test pins this so a regression that
+  unconditionally sends memory will fail.
+
 ## Change Log Rules
 
 When any assistant or developer changes the project, add:

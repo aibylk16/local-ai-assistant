@@ -95,6 +95,17 @@ export function applySchema(db: DB): void {
       FOREIGN KEY(thread_id) REFERENCES message_threads(id) ON DELETE SET NULL
     );
     CREATE INDEX IF NOT EXISTS idx_pending_status ON pending_actions(status);
+
+    -- AI provider settings. Keys:
+    --   selected_provider           -- 'mock' | 'openai' | 'anthropic'  (default 'mock')
+    --   cloud_approved.<provider>   -- '1' | '0' per cloud provider     (default '0')
+    --   local_only_mode             -- '1' | '0'                        (default '1')
+    --   memory_sharing              -- '1' | '0'                        (default '0')
+    CREATE TABLE IF NOT EXISTS provider_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `)
 
   const current = db

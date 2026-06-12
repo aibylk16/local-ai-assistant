@@ -9,10 +9,17 @@ import { AuditScreen } from './pages/Audit.js'
 import { ConnectorsScreen } from './pages/Connectors.js'
 import { MonitoringScreen } from './pages/Monitoring.js'
 import { PendingScreen } from './pages/Pending.js'
+import { ProvidersScreen } from './pages/Providers.js'
 
 interface Bootstrap {
   localOnlyMode: boolean
-  provider: { id: string; label: string; local: boolean; dataSentNotice: string }
+  provider: { id: string; label: string; local: boolean; dataSentNotice: string; requiresApproval: boolean }
+  providerSettings: {
+    selectedProvider: string
+    cloudApproved: Record<string, boolean>
+    localOnlyMode: boolean
+    memorySharing: boolean
+  }
   workerStatus: { active: boolean; pendingCount: number; lastRunAt: string | null; lastError: string | null }
 }
 
@@ -42,6 +49,7 @@ export function App(): JSX.Element {
         {screen === 'memory' && <MemoryScreen tick={tick} onChange={refresh} />}
         {screen === 'audit' && <AuditScreen tick={tick} />}
         {screen === 'connectors' && <ConnectorsScreen />}
+        {screen === 'providers' && <ProvidersScreen onChange={refresh} />}
         {screen === 'monitoring' && <MonitoringScreen onChange={refresh} />}
         {screen === 'pending' && <PendingScreen onChange={refresh} />}
       </main>

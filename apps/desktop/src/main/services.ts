@@ -1,10 +1,16 @@
 import {
   AgentOrchestrator,
+  AnthropicProvider,
   AuditLogService,
+  ManagedProvider,
   MemoryService,
   MockProvider,
+  OpenAIProvider,
   PermissionEngine,
+  ProviderSettingsStore,
   ToolRegistry,
+  type ModelProvider,
+  type ProviderId,
 } from '@local-ai-assistant/core'
 import {
   BusinessCloudAdapter,
@@ -26,7 +32,12 @@ export interface Services {
   memory: MemoryService
   audit: AuditLogService
   tools: ToolRegistry
-  provider: MockProvider
+  /** Registry of every provider that exists. The active one is chosen by settings. */
+  providerRegistry: Record<ProviderId, ModelProvider>
+  /** Single provider the orchestrator talks to — gates approval + local-only. */
+  provider: ManagedProvider
+  /** AI-provider settings store (selection, approvals, local-only, memory sharing). */
+  providerSettings: ProviderSettingsStore
   agent: AgentOrchestrator
   email: { mock: MockEmailConnector }
   whatsapp: {
@@ -35,8 +46,6 @@ export interface Services {
     observation: DesktopObservationAdapter
   }
   worker: BackgroundWorker
-  /** Local-only mode flag. UI must surface this when true. */
-  localOnlyMode: boolean
 }
 
 export function buildServices(): Services {
@@ -46,8 +55,21 @@ export function buildServices(): Services {
   const memory = new MemoryService(db, encryption)
   const audit = new AuditLogService(db)
   const tools = new ToolRegistry()
-  const provider = new MockProvider()
-  const localOnlyMode = true
+  const providerSettings = new ProviderSettingsStore(db)
+
+  // API keys come from the environment. The user sets them before launching
+  // the app; we do NOT persist them in the SQLite store. If a key is missing,
+  // the provider's complete() throws MissingApiKeyError and the UI surfaces it.
+  const openaiKey = process.env['OPENAI_API_KEY']
+  const anthropicKey = process.env['ANTHROPIC_API_KEY']
+
+  const providerRegistry: Record<ProviderId, ModelProvider> = {
+    mock: new MockProvider(),
+    openai: new OpenAIProvider({ apiKey: openaiKey }),
+    anthropic: new AnthropicProvider({ apiKey: anthropicKey }),
+  }
+
+  const provider = new ManagedProvider(providerRegistry, providerSettings, audit)
 
   const agent = new AgentOrchestrator({
     permissions,
@@ -55,7 +77,8 @@ export function buildServices(): Services {
     audit,
     tools,
     provider,
-    localOnlyMode,
+    localOnlyMode: () => providerSettings.localOnlyMode(),
+    memorySharing: () => providerSettings.memorySharing(),
   })
 
   const email = { mock: new MockEmailConnector() }
@@ -78,11 +101,12 @@ export function buildServices(): Services {
     memory,
     audit,
     tools,
+    providerRegistry,
     provider,
+    providerSettings,
     agent,
     email,
     whatsapp,
     worker,
-    localOnlyMode,
   }
 }

@@ -34,6 +34,15 @@ export interface AssistantApi {
   whatsapp: {
     adapters: () => Promise<unknown>
   }
+  provider: {
+    list: () => Promise<unknown>
+    settings: () => Promise<unknown>
+    select: (id: string) => Promise<unknown>
+    approveCloud: (id: string, dataSentAcknowledged: boolean) => Promise<unknown>
+    revokeCloud: (id: string) => Promise<unknown>
+    setLocalOnly: (on: boolean) => Promise<unknown>
+    setMemorySharing: (on: boolean) => Promise<unknown>
+  }
   worker: {
     start: () => Promise<unknown>
     stop: () => Promise<unknown>

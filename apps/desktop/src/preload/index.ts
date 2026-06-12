@@ -44,6 +44,17 @@ const api = {
     adapters: () => ipcRenderer.invoke('whatsapp:adapters'),
   },
 
+  provider: {
+    list: () => ipcRenderer.invoke('provider:list'),
+    settings: () => ipcRenderer.invoke('provider:settings'),
+    select: (id: string) => ipcRenderer.invoke('provider:select', id),
+    approveCloud: (id: string, dataSentAcknowledged: boolean) =>
+      ipcRenderer.invoke('provider:approveCloud', id, dataSentAcknowledged),
+    revokeCloud: (id: string) => ipcRenderer.invoke('provider:revokeCloud', id),
+    setLocalOnly: (on: boolean) => ipcRenderer.invoke('provider:setLocalOnly', on),
+    setMemorySharing: (on: boolean) => ipcRenderer.invoke('provider:setMemorySharing', on),
+  },
+
   worker: {
     start: () => ipcRenderer.invoke('worker:start'),
     stop: () => ipcRenderer.invoke('worker:stop'),

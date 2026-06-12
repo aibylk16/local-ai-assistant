@@ -13,8 +13,23 @@ export interface OrchestratorOptions {
   audit: AuditLogService
   tools: ToolRegistry
   provider: ModelProvider
-  /** When true, no cloud calls. UI must reflect this. */
-  localOnlyMode: boolean
+  /**
+   * When true, no cloud calls. UI must reflect this. Accepts either a static
+   * value (used by tests) or a getter that reads live settings (used by the
+   * desktop app so toggles take effect immediately).
+   */
+  localOnlyMode: boolean | (() => boolean)
+  /**
+   * When true, the orchestrator MAY include memory items in the prompt.
+   * Default is `false` even if not provided — memory never crosses to a cloud
+   * provider unless the user explicitly opts in via the Settings screen.
+   */
+  memorySharing?: boolean | (() => boolean)
+}
+
+function resolveBool(v: boolean | (() => boolean) | undefined, fallback: boolean): boolean {
+  if (v === undefined) return fallback
+  return typeof v === 'function' ? v() : v
 }
 
 /**
@@ -27,9 +42,15 @@ export class AgentOrchestrator {
   /**
    * Run one turn. Produces a reply and, optionally, a pending plan the UI
    * must surface in a confirmation modal. This method NEVER executes a tool.
+   *
+   * Memory items are NEVER appended to the prompt unless `memorySharing`
+   * resolves to true. The default is off — the user must explicitly opt in.
    */
   async turn(input: AgentTurnInput): Promise<AgentTurnOutput> {
     const history = (input.history ?? []).map((m) => ({ role: m.role, content: m.content }))
+    const localOnly = resolveBool(this.opts.localOnlyMode, true)
+    const memorySharing = resolveBool(this.opts.memorySharing, false)
+
     const completion = await this.opts.provider.complete({
       messages: [
         {
@@ -73,7 +94,11 @@ export class AgentOrchestrator {
       action: 'chat.turn',
       risk: 'low',
       result: 'ok',
-      detail: { provider: this.opts.provider.info.id, localOnly: this.opts.localOnlyMode },
+      detail: {
+        provider: this.opts.provider.info.id,
+        localOnly,
+        memorySharing,
+      },
     })
 
     return {

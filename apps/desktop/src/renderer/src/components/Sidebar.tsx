@@ -5,6 +5,7 @@ export type ScreenId =
   | 'memory'
   | 'audit'
   | 'connectors'
+  | 'providers'
   | 'monitoring'
   | 'pending'
 
@@ -20,6 +21,7 @@ const ITEMS: Array<{ id: ScreenId; label: string }> = [
   { id: 'pending', label: 'Pending replies' },
   { id: 'memory', label: 'Memory' },
   { id: 'permissions', label: 'Permissions' },
+  { id: 'providers', label: 'AI Provider' },
   { id: 'connectors', label: 'Connectors' },
   { id: 'monitoring', label: 'Monitoring' },
   { id: 'audit', label: 'Activity / audit' },
