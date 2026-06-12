@@ -64,6 +64,20 @@ The user asked not to install dependencies on this PC and to install/check the p
 - The GitHub workflow has not run yet; actual install/test/build status remains pending until the project is pushed or uploaded to GitHub.
 - The workflow uses `npm install` because no `package-lock.json` is committed yet. Once a trusted environment produces a lockfile, commit it and switch CI to `npm ci`.
 
+### GitHub CI test fix (by Codex)
+
+**What changed**
+
+- Updated the JWT sensitive-data regex in `packages/core/src/memory/encryption.ts` so normal JWT-shaped bearer tokens are blocked by `looksSensitive`.
+
+**Why it changed**
+
+GitHub Actions failed on both Windows and macOS in `packages/core/src/__tests__/memory.test.ts > looksSensitive > flags OTPs and JWTs`. The test JWT had a valid JWT shape, but the first segment was shorter than the detector required, so the detector returned `false`.
+
+**TODOs / known risks**
+
+- Re-run GitHub Actions after pushing this fix.
+
 ## Change Log Rules
 
 When any assistant or developer changes the project, add:

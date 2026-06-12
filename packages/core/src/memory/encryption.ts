@@ -30,7 +30,7 @@ const SENSITIVE_PATTERNS: ReadonlyArray<RegExp> = [
   /\b(?:otp|one[- ]?time[- ]?password)\b/i,
   /\b(?:aadhaar|aadhar|ssn|pan card)\b/i,
   /\bsk-[a-z0-9]{20,}\b/i, // OpenAI-style secret key
-  /\bey[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/, // JWT
+  /\bey[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b/, // JWT
 ]
 
 export function looksSensitive(text: string): boolean {

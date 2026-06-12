@@ -6,7 +6,7 @@ Claude's MVP scaffold was checked without running local install/test/dev command
 
 Added GitHub-side verification so dependency install and build checks can happen on GitHub instead of this PC.
 
-Attempted to push to `https://github.com/aibylk16/local-ai-assistant.git`, but GitHub returned `Repository not found.` The local repo and commit are ready; pushing needs an existing repository URL and authentication.
+The repository now exists at `https://github.com/aibylk16/local-ai-assistant.git`, and the local `main` branch tracks `origin/main`.
 
 ## Files changed
 
@@ -24,19 +24,18 @@ Attempted to push to `https://github.com/aibylk16/local-ai-assistant.git`, but G
 
 ## Open TODOs
 
-- Create or choose a GitHub repository and push/upload this project.
-- If using the guessed target, create `https://github.com/aibylk16/local-ai-assistant` first or provide the correct repository URL.
-- Run the `Verify MVP Scaffold` workflow from the GitHub Actions tab.
+- Push the JWT detector fix.
+- Re-run or wait for the `Verify MVP Scaffold` workflow from the GitHub Actions tab.
 - If the workflow creates or reports the need for a lockfile, commit `package-lock.json` and change the install step to `npm ci`.
 - Optionally remove the local `node_modules` folder from this PC.
 
 ## Risks / blockers
 
-- This workspace is not currently connected to a GitHub repository.
+- This workspace is connected to `https://github.com/aibylk16/local-ai-assistant.git`.
 - GitHub CLI is not installed on this PC.
-- Push to `https://github.com/aibylk16/local-ai-assistant.git` failed with `Repository not found.`
-- Actual runtime status remains unverified until the GitHub Actions workflow runs.
+- Actual runtime status remains unverified until the GitHub Actions workflow runs successfully.
+- First GitHub Actions run failed on both Windows and macOS in `packages/core/src/__tests__/memory.test.ts > looksSensitive > flags OTPs and JWTs`; `packages/core/src/memory/encryption.ts` was updated to catch normal JWT-shaped tokens with shorter first segments.
 
 ## Suggested next step
 
-Create the GitHub repository or provide the correct repo URL, then push the local `main` branch and run the `Verify MVP Scaffold` workflow.
+Push the JWT detector fix, then re-run or wait for the `Verify MVP Scaffold` workflow and review any remaining failures.
