@@ -5,6 +5,8 @@ import './styles.css'
 type VoiceStyle = 'female' | 'male' | 'neutral'
 type ProviderId = 'mock' | 'openai' | 'anthropic'
 
+const PRODUCT_NAME = 'AI Employee'
+
 interface Message {
   role: 'user' | 'assistant'
   content: string
@@ -96,6 +98,13 @@ const DEFAULT_PROVIDER: ProviderSettings = {
   },
 }
 
+const WORK_STATUS = [
+  { label: 'Online app', value: 'Live' },
+  { label: 'Training brain', value: 'Core ready' },
+  { label: 'Desktop work', value: 'Companion required' },
+  { label: 'Gmail/WhatsApp', value: 'Connector pending' },
+] as const
+
 function loadJson<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key)
@@ -128,7 +137,7 @@ function mockReply(input: string, identity: Identity): string {
   const name = identity.assistantName.trim() || 'your assistant'
   const lower = input.toLowerCase()
   if (lower.includes('excel') || lower.includes('sheet')) {
-    return `${name} can help plan Excel and spreadsheet workflows. Real file access will run through the desktop companion with permission.`
+    return `${name} can help plan Excel and spreadsheet work. Real file access will run through the desktop companion with permission.`
   }
   if (lower.includes('whatsapp')) {
     return `${name} can track WhatsApp work through WhatsApp Business, manual import, or visible desktop companion flows. Personal full-chat reading is not officially available.`
@@ -139,7 +148,7 @@ function mockReply(input: string, identity: Identity): string {
   if (lower.includes('computer') || lower.includes('file')) {
     return `${name} will use the desktop companion for local computer and file tasks, because the web app cannot directly control your PC.`
   }
-  return `${name} is ready in web mode. I can plan tasks online now, and deeper local actions will be handled by the desktop companion with permission.`
+  return `${name} is ready in web mode. I can plan office work online now, and deeper local actions will be handled by the desktop companion with permission.`
 }
 
 function detectWebAction(input: string): WebAction | null {
@@ -174,6 +183,7 @@ function App(): JSX.Element {
 
   const warning = nameWarning(identity.assistantName)
   const configured = identity.assistantName.trim().length > 0 && !warning?.startsWith('Choose')
+  const assistantLabel = identity.assistantName.trim() || 'Not configured'
 
   const send = (): void => {
     const text = draft.trim()
@@ -233,8 +243,12 @@ function App(): JSX.Element {
     <main className="shell">
       <section className="topbar">
         <div>
-          <p className="eyebrow">Hybrid AI employee preview</p>
-          <h1>{identity.assistantName.trim() || 'Name your assistant'}</h1>
+          <p className="eyebrow">{PRODUCT_NAME}</p>
+          <h1>Online work console</h1>
+          <p className="subhead">
+            Assistant: <strong>{assistantLabel}</strong>
+            {identity.companyLabel.trim() ? ` - ${identity.companyLabel.trim()}` : ''}
+          </p>
         </div>
         <div className="status">
           <span>{provider.localOnly ? 'Local-only on' : 'Cloud allowed'}</span>
@@ -242,9 +256,18 @@ function App(): JSX.Element {
         </div>
       </section>
 
+      <section className="workspace-strip" aria-label="AI Employee status">
+        {WORK_STATUS.map((item) => (
+          <div className="status-card" key={item.label}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+          </div>
+        ))}
+      </section>
+
       <section className="grid">
         <aside className="panel">
-          <h2>Assistant Identity</h2>
+          <h2>Identity & Voice</h2>
           <label>
             Assistant name
             <input
@@ -284,12 +307,12 @@ function App(): JSX.Element {
         </aside>
 
         <section className="panel chat">
-          <h2>Web Chat</h2>
+          <h2>{PRODUCT_NAME} Chat</h2>
           <div className="messages">
             {messages.length === 0 ? (
               <p className="muted">
-                This online preview uses a safe mock assistant. Web-only mode can plan work;
-                desktop companion handles local computer actions.
+                Online mode is ready for planning, approvals, and safe web actions. Local
+                computer actions run through the desktop companion.
               </p>
             ) : (
               messages.map((m, i) => (
@@ -328,7 +351,7 @@ function App(): JSX.Element {
         </section>
 
         <aside className="panel">
-          <h2>Provider Safety</h2>
+          <h2>Safety & Access</h2>
           <label>
             Provider
             <select
@@ -360,6 +383,21 @@ function App(): JSX.Element {
             Cloud providers require explicit approval. Memory is not sent by default.
           </p>
           {notice && <div className="success">{notice}</div>}
+
+          <div className="access-list">
+            <div>
+              <span>Web links</span>
+              <strong>Approval required</strong>
+            </div>
+            <div>
+              <span>Local files</span>
+              <strong>Desktop companion</strong>
+            </div>
+            <div>
+              <span>Send/delete/pay</span>
+              <strong>Final confirmation</strong>
+            </div>
+          </div>
         </aside>
       </section>
     </main>

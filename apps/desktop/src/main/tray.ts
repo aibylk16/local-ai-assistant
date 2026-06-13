@@ -5,9 +5,9 @@ let tray: Tray | null = null
 
 /**
  * Tray indicator. Two important properties:
- *   1. It is always visible while the app runs — so background monitoring
+ *   1. It is always visible while the app runs, so background monitoring
  *      is never invisible to the user.
- *   2. Its title/tooltip changes when monitoring is active vs. paused —
+ *   2. Its title/tooltip changes when monitoring is active vs. paused,
  *      so the user can tell at a glance what the assistant is doing.
  */
 export function setupTray(services: Services, window: BrowserWindow): void {
@@ -15,14 +15,14 @@ export function setupTray(services: Services, window: BrowserWindow): void {
   // image. Replace with a real icon in resources/ once you ship.
   const icon = nativeImage.createEmpty()
   tray = new Tray(icon)
-  tray.setToolTip('Local AI Assistant — idle')
+  tray.setToolTip('AI Employee - idle')
 
   const refreshMenu = () => {
     const status = services.worker.getStatus()
     const monitoringGranted = services.permissions.isGranted('background.monitoring')
 
     const menu = Menu.buildFromTemplate([
-      { label: 'Open Assistant', click: () => window.show() },
+      { label: 'Open AI Employee', click: () => window.show() },
       { type: 'separator' },
       {
         label: status.active
@@ -47,8 +47,8 @@ export function setupTray(services: Services, window: BrowserWindow): void {
     tray!.setContextMenu(menu)
     tray!.setToolTip(
       status.active
-        ? `Local AI Assistant — monitoring (${status.pendingCount} pending)`
-        : 'Local AI Assistant — idle',
+        ? `AI Employee - monitoring (${status.pendingCount} pending)`
+        : 'AI Employee - idle',
     )
   }
 

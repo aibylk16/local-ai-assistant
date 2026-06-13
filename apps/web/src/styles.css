@@ -65,7 +65,7 @@ label {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .eyebrow,
@@ -86,6 +86,11 @@ h2 {
   margin: 0;
 }
 
+.subhead {
+  color: #40516a;
+  margin: 6px 0 0;
+}
+
 .status {
   display: flex;
   gap: 8px;
@@ -98,6 +103,34 @@ h2 {
   background: white;
   border-radius: 6px;
   padding: 8px 10px;
+}
+
+.workspace-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.status-card {
+  background: white;
+  border: 1px solid #d8e0ea;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.status-card span,
+.access-list span {
+  display: block;
+  color: #607087;
+  font-size: 13px;
+}
+
+.status-card strong,
+.access-list strong {
+  display: block;
+  margin-top: 4px;
 }
 
 .grid {
@@ -182,6 +215,19 @@ h2 {
   flex-wrap: wrap;
 }
 
+.access-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.access-list div {
+  border: 1px solid #d8e0ea;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #f8fbfe;
+}
+
 .warning,
 .success {
   padding: 10px 12px;
@@ -211,11 +257,13 @@ h2 {
 
 @media (max-width: 980px) {
   .topbar,
-  .grid {
+  .grid,
+  .workspace-strip {
     display: block;
   }
 
-  .panel {
+  .panel,
+  .status-card {
     margin-bottom: 16px;
   }
 

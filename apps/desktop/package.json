@@ -2,7 +2,7 @@
   "name": "@local-ai-assistant/desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "Local-first desktop AI assistant for Windows and macOS.",
+  "description": "AI Employee desktop companion for Windows and macOS.",
   "author": "aibylk16",
   "type": "module",
   "main": "./out/main/index.js",
@@ -33,8 +33,8 @@
     "vite": "^5.3.0"
   },
   "build": {
-    "appId": "com.local-ai-assistant.desktop",
-    "productName": "Local AI Assistant",
+    "appId": "com.ai-employee.desktop",
+    "productName": "AI Employee",
     "electronVersion": "31.0.0",
     "directories": {
       "output": "release"

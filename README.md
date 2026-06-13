@@ -1,6 +1,6 @@
-# Local AI Assistant Project
+# AI Employee
 
-This is a local-first desktop AI assistant plan for Windows and macOS.
+AI Employee is an online and desktop assistant for Windows and macOS.
 
 Goal: build an assistant that can understand text and voice commands, ask permission before acting, work in the background, learn from approved activity, remember useful preferences, monitor missed emails/messages, and keep user data private.
 
@@ -73,7 +73,7 @@ The desktop MVP is phase one of a larger product: a full **AI employee/assistant
 
 ## Online Web Preview
 
-The project includes a first browser-based companion under `apps/web`. It is intended for online access without repeatedly downloading the desktop runner.
+The project includes a first browser-based **AI Employee** companion under `apps/web`. It is intended for online access without repeatedly downloading the desktop runner.
 
 Current web preview scope:
 
@@ -208,10 +208,10 @@ If you do not want to install Node dependencies on this PC, use GitHub Actions:
 1. Push changes to GitHub.
 2. Open the repository's **Actions** tab.
 3. Wait for **Verify MVP Scaffold** to pass.
-4. Open **Build Windows Runnable Artifact**.
-5. Download the `local-ai-assistant-windows-runner` artifact from the completed run.
+4. Open **Build AI Employee Windows Artifact**.
+5. Download the `ai-employee-windows-runner` artifact from the completed run.
 6. Extract it.
-7. Double-click `START_LOCAL_AI_ASSISTANT.cmd`.
+7. Double-click `START_AI_EMPLOYEE.cmd`.
 
 The Windows artifact workflow installs dependencies, rebuilds native Electron modules, runs tests, builds the app, and uploads a runnable dev-mode bundle from GitHub-hosted Windows. Node.js must still be installed on the PC, but no `npm install` is needed locally.
 

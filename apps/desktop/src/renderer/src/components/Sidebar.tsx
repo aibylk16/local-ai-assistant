@@ -31,7 +31,7 @@ export function Sidebar({ active, onSelect, status }: Props): JSX.Element {
   const statusClass = status.active ? 'statusbar active' : 'statusbar'
   return (
     <aside className="sidebar">
-      <h1>Local AI Assistant</h1>
+      <h1>AI Employee</h1>
       <nav className="nav">
         {ITEMS.map((it) => (
           <button
@@ -46,7 +46,7 @@ export function Sidebar({ active, onSelect, status }: Props): JSX.Element {
       <div className={statusClass}>
         <span className="dot" />
         {status.active
-          ? `Monitoring on — ${status.pendingCount} pending`
+          ? `Monitoring on - ${status.pendingCount} pending`
           : 'Monitoring off'}
       </div>
     </aside>

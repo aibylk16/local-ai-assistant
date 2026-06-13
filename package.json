@@ -1,8 +1,8 @@
 {
-  "name": "local-ai-assistant",
+  "name": "ai-employee",
   "private": true,
   "version": "0.1.0",
-  "description": "Local-first desktop AI assistant for Windows and macOS. Permissioned, audited, with local encrypted memory and connector boundaries for email/WhatsApp.",
+  "description": "AI Employee online and desktop assistant. Permissioned, audited, with local encrypted memory and connector boundaries for email/WhatsApp.",
   "workspaces": [
     "apps/*",
     "packages/*"

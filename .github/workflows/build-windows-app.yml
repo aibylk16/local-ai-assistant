@@ -1,4 +1,4 @@
-name: Build Windows Runnable Artifact
+name: Build AI Employee Windows Artifact
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-windows:
-    name: Build Windows runnable app bundle
+    name: Build AI Employee Windows runnable app bundle
     runs-on: windows-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
           @echo off
           setlocal
           cd /d "%~dp0"
-          echo Starting Local AI Assistant...
+          echo Starting AI Employee...
           echo.
           echo Optional cloud keys:
           echo   set OPENAI_API_KEY=your_key
@@ -57,18 +57,18 @@ jobs:
             npm.cmd run dev
           ) else (
             echo ERROR: node_modules\.bin is missing from this artifact.
-            echo Please download a newer local-ai-assistant-windows-runner artifact.
+            echo Please download a newer ai-employee-windows-runner artifact.
             echo.
             pause
             exit /b 1
           )
           pause
-          '@ | Set-Content -Path windows-runner\START_LOCAL_AI_ASSISTANT.cmd -Encoding ASCII
+          '@ | Set-Content -Path windows-runner\START_AI_EMPLOYEE.cmd -Encoding ASCII
           @'
-          Local AI Assistant - Windows runnable bundle
+          AI Employee - Windows runnable bundle
 
           1. Extract this zip.
-          2. Double-click START_LOCAL_AI_ASSISTANT.cmd.
+          2. Double-click START_AI_EMPLOYEE.cmd.
           3. The app runs in dev mode with dependencies already included.
 
           Notes:
@@ -78,10 +78,10 @@ jobs:
           - Local mock provider works without keys.
           '@ | Set-Content -Path windows-runner\README-RUN.txt -Encoding ASCII
 
-      - name: Upload Windows app artifact
+      - name: Upload AI Employee Windows app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: local-ai-assistant-windows-runner
+          name: ai-employee-windows-runner
           path: windows-runner/**
           if-no-files-found: error
           include-hidden-files: true

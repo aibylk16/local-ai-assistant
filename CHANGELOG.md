@@ -4,6 +4,17 @@ Use this file to record every meaningful project change so Codex, Claude, and th
 
 ## 2026-06-13
 
+### AI Employee online and app branding (by Codex)
+
+- Renamed the user-facing product shell to **AI Employee** across the web app,
+  desktop title/sidebar/tray text, app metadata, and GitHub build workflows.
+- Changed the web preview into an online work console with status cards for the
+  online app, training brain, desktop companion, and connector readiness.
+- Renamed the Windows runner artifact to `ai-employee-windows-runner` and the
+  launcher script to `START_AI_EMPLOYEE.cmd`.
+- Kept the GitHub Pages base path as `/local-ai-assistant/` because it follows
+  the existing repository URL.
+
 ### Web preview Gmail unread action (by Codex)
 
 - Added a dedicated web-preview action for Gmail unread/pending-mail requests.
