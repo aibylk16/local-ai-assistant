@@ -4,6 +4,15 @@ Use this file to record every meaningful project change so Codex, Claude, and th
 
 ## 2026-06-13
 
+### Web preview Gmail follow-up honesty (by Codex)
+
+- Added short-term web chat context after opening Gmail/Outlook.
+- Follow-up messages like "are u check" now explain that the app opened Gmail
+  but cannot read or count the inbox until a real Gmail/Outlook connector and
+  permission flow are added.
+- Updated the approval reply for mail actions so users do not confuse "opened
+  the mailbox" with "inspected the mailbox."
+
 ### AI Employee online and app branding (by Codex)
 
 - Renamed the user-facing product shell to **AI Employee** across the web app,

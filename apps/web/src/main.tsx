@@ -151,6 +151,28 @@ function mockReply(input: string, identity: Identity): string {
   return `${name} is ready in web mode. I can plan office work online now, and deeper local actions will be handled by the desktop companion with permission.`
 }
 
+function isMailAction(action: WebAction | null): boolean {
+  return action?.id === 'gmail' || action?.id === 'gmail-unread' || action?.id === 'outlook'
+}
+
+function isCheckingFollowUp(input: string): boolean {
+  const lower = input.toLowerCase()
+  const asksCheck = /\b(check|checked|count|see|read|open|done|tell)\b/.test(lower)
+  const asksStatus = /\b(are|did|have|has|can|u|you|it|now|many|pending|unread)\b/.test(lower)
+  return asksCheck && asksStatus
+}
+
+function contextualReply(input: string, identity: Identity, lastOpenedAction: WebAction | null): string | null {
+  if (!isMailAction(lastOpenedAction) || !isCheckingFollowUp(input)) return null
+
+  const name = identity.assistantName.trim() || 'AI Employee'
+  if (lastOpenedAction?.id === 'gmail-unread') {
+    return `${name} opened Gmail's unread search in a new tab, but this online preview still cannot read or count your inbox. To answer "how many unread mails" for real, the next build needs Gmail sign-in plus a Gmail connector/backend permission flow.`
+  }
+
+  return `${name} opened the mail app in a new tab, but this online preview cannot inspect the mailbox yet. Real email checking needs Gmail or Outlook sign-in with explicit permission.`
+}
+
 function detectWebAction(input: string): WebAction | null {
   const lower = input.toLowerCase()
   const mentionsMail = /\b(gmail|email|mail|inbox)\b/.test(lower)
@@ -177,6 +199,7 @@ function App(): JSX.Element {
   const [draft, setDraft] = React.useState('')
   const [notice, setNotice] = React.useState<string | null>(null)
   const [pendingAction, setPendingAction] = React.useState<WebAction | null>(null)
+  const [lastOpenedAction, setLastOpenedAction] = React.useState<WebAction | null>(null)
 
   React.useEffect(() => saveJson('assistant.identity', identity), [identity])
   React.useEffect(() => saveJson('assistant.provider', provider), [provider])
@@ -190,6 +213,12 @@ function App(): JSX.Element {
     if (!text) return
     setDraft('')
     const nextMessages: Message[] = [...messages, { role: 'user', content: text }]
+    const followUpReply = contextualReply(text, identity, lastOpenedAction)
+    if (followUpReply) {
+      setMessages([...nextMessages, { role: 'assistant', content: followUpReply }])
+      return
+    }
+
     const action = detectWebAction(text)
     if (action) {
       setPendingAction(action)
@@ -223,9 +252,15 @@ function App(): JSX.Element {
     if (!pendingAction) return
     const action = pendingAction
     window.open(action.url, '_blank', 'noopener,noreferrer')
+    setLastOpenedAction(action)
     setMessages((m) => [
       ...m,
-      { role: 'assistant', content: `Approved. Opening ${action.url} in a new tab.` },
+      {
+        role: 'assistant',
+        content: isMailAction(action)
+          ? `Approved. Opening ${action.url} in a new tab. I can open it, but I cannot read or count your mailbox until the Gmail/Outlook connector is added.`
+          : `Approved. Opening ${action.url} in a new tab.`,
+      },
     ])
     setPendingAction(null)
   }
