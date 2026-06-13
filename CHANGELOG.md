@@ -4,6 +4,87 @@ Use this file to record every meaningful project change so Codex, Claude, and th
 
 ## 2026-06-13
 
+### Trainable AI Employee Brain (by Claude)
+
+**Files changed**
+
+- `packages/core/src/training/types.ts` - new. `TaskSeed` + `SeedStep` (backend
+  seed format), `SeedImportResult`/`SeedImportSummary`, `LearnedLesson` +
+  `LearnedLessonInput` (channel C), `FineTuningRecord` (channel D),
+  `SeedSensitiveIssue`, refusal-reason types.
+- `packages/core/src/training/sanitizer.ts` - new. STRICT seed/lesson
+  sensitivity checks that REFUSE (not redact) anything that looks like an email,
+  phone, order/invoice/account number, money amount, secret URL param, or any
+  credential/OTP/card/key. `findSeedSensitiveIssues`, `findLessonSensitiveIssues`,
+  `seedStructureIssues`.
+- `packages/core/src/training/seeds.ts` - new. `OFFICE_TASK_SEEDS`: five generic
+  built-in skills (email triage, WhatsApp reply drafting, report download + Excel
+  summary, open website after approval, organize invoices by month). Shared seeds
+  ship unapproved by default.
+- `packages/core/src/training/importer.ts` - new. `BackendTrainingImporter`:
+  validates → refuses sensitive seeds (audited) → requires approval for
+  team/global (audited) → stores through the existing `WorkflowTemplateStore`
+  (so its sensitive-content block, scope gate, and forced final-confirmation on
+  side-effect steps all still apply). Backend training grants NO new powers and
+  bypasses NO safety rail.
+- `packages/core/src/training/lessons.ts` - new. `LessonStore` (channel C):
+  records sanitized preferences/rules; refuses private-looking content; requires
+  explicit approval for team/global lessons; list, get, delete; audited.
+- `packages/core/src/training/fine-tuning.ts` - new. `exportFineTuningRecords`
+  (channel D): turns shared templates + lessons into sanitized generic
+  instruction/context/response records; excludes private by default; re-sanitizes
+  and drops anything unsafe. Trains nothing.
+- `packages/core/src/training/chat-copy.ts` - new. `TRAINED_REUSE_COPY` and
+  `TRAINING_UI_TERMS` (the natural words users see) plus `INTERNAL_ONLY_TERMS`
+  and `internalTermsIn()` (the workflow/template/matcher/replay/vector/
+  model-weights/fine-tune words that must never reach normal chat or UI).
+- `packages/core/src/training/index.ts` + `packages/core/src/index.ts` - exports.
+- `packages/core/src/db/schema.ts` - added `learned_lessons` table
+  (`IF NOT EXISTS`, no schema-version bump - same pattern as prior tables).
+- `packages/core/src/__tests__/training.test.ts` - new vitest suite: generic
+  backend learning saves + matches later requests; sensitive seeds blocked
+  (email/invoice id/money/phone) and audited; team/global require approval;
+  raw/private data never enters shared learning; side-effect steps forced to
+  final confirmation; built-in seeds refused by default and imported once
+  approved; lessons record + refuse sensitive + require shared approval;
+  fine-tuning export excludes private and unapproved learning by default; chat
+  copy never exposes internal terminology.
+- `docs/training-architecture.md` - new. The four channels, invisible chat use,
+  UI terms, privacy/scope, permission rules, code map.
+- `docs/developer-training.md` - new. Where seeds live, how to add a skill,
+  allowed fields, how to test the sanitizer, how to promote private/team/global,
+  how to export sanitized fine-tuning examples, audit actions.
+- `docs/teaching-mode.md` - linked Teaching Mode as channel A of the brain.
+- `docs/privacy-and-memory.md` - added a "Training channels" section.
+- `README.md` - added "Trainable AI Employee Brain (free, no API)" section.
+- `docs/handoffs/2026-06-13-claude-trainable-ai-brain.md` - handoff for Codex.
+
+**Why it changed**
+
+The product needs a brain layer that can be both user-taught AND developer-seeded
+with safe office knowledge, then reused silently in chat. This pass adds backend/
+admin training (channel B), learning-from-work lessons (channel C), and a
+sanitized future fine-tuning export (channel D) on top of the existing Teaching
+Mode (channel A) and `WorkflowTemplateStore` - honestly as structure/preference
+learning, NOT LLM training. No safeguard was weakened: seeds and lessons are
+refused (not redacted) when they look private, shared scopes still require
+explicit approval, unapproved private learning is not matched/exported,
+side-effect steps still force final confirmation, and nothing executes outside
+the plan → permission → confirmation → audit pipeline.
+
+**TODOs / known risks**
+
+- Tests not run locally (standing no-local-install policy; `node_modules/` is
+  empty). Verify `training.test.ts` plus existing suites in GitHub Actions CI.
+- The strict seed sanitizer is regex-based and English-leaning; it intentionally
+  over-triggers (e.g. any 6+ digit number is blocked as a possible ID). Over-
+  triggering blocks a seed for the developer to fix - it can never leak data.
+- No UI yet: training is core-only. A future pass wires an admin "Train
+  assistant" screen and IPC, using `TRAINING_UI_TERMS` and keeping internal
+  vocabulary out of the end-user surface.
+- Channel D only prepares data. Connecting a local/open-source model and running
+  an actual fine-tune remains explicit future work.
+
 - Added no-API teachable workflow direction for repeatable office tasks.
 - Added `workflow_templates` storage for sanitized private/team/global reusable workflows.
 - Added core workflow template store, sanitizer, matching, audit hooks, and tests.

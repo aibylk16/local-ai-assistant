@@ -126,6 +126,7 @@ export class WorkflowTemplateStore {
     const normalizedGoal = normalize(goal)
     if (!normalizedGoal) return []
     return this.list({ limit: 500 })
+      .filter((template) => template.approvedForReuse)
       .filter((template) => opts.includePrivate || template.scope !== 'private')
       .map((template) => scoreTemplate(template, normalizedGoal))
       .filter((match) => match.score > 0)

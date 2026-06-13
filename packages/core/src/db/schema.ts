@@ -163,6 +163,22 @@ export function applySchema(db: DB): void {
     );
     CREATE INDEX IF NOT EXISTS idx_teaching_corrections_session ON teaching_corrections(session_id);
 
+    -- Trainable AI Employee Brain - channel C "learning from successful work".
+    -- Lessons are sanitized PREFERENCES and RULES only (output format, step
+    -- order, confirmation/app preference, classification rule). The lesson store
+    -- refuses anything that looks like private user data before inserting here.
+    CREATE TABLE IF NOT EXISTS learned_lessons (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT NOT NULL,
+      kind TEXT NOT NULL,         -- 'output_format' | 'step_order' | 'confirmation_preference' | 'app_preference' | 'classification_rule'
+      scope TEXT NOT NULL,        -- 'private' | 'team' | 'global'
+      summary TEXT NOT NULL,      -- sanitized, generic
+      detail TEXT,                -- sanitized, generic; nullable
+      tags TEXT NOT NULL,         -- JSON array
+      source_detail TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_lessons_scope ON learned_lessons(scope);
+
     -- Assistant identity settings (local-only; cloud sync is a future, opt-in step).
     -- Keys:
     --   configured       -- '1' | '0'  (default '0' - no built-in assistant name)

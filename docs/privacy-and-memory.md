@@ -80,6 +80,25 @@ the workflow store's sensitive-content block before saving. Side-effect steps
 (send/post/delete/upload/submit/payment) always require final confirmation at
 replay time, no matter what the session recorded.
 
+## Training channels (backend seeds and lessons)
+
+The assistant's brain layer is also fed by developer-seeded office skills and by
+small lessons learned after a task completes (see
+[training-architecture.md](training-architecture.md)). These follow the same
+privacy rules as user teaching:
+
+- Backend seeds must be GENERIC by construction. A seed containing an email,
+  phone number, order/invoice ID, money amount, or any credential is **refused**
+  at import (not redacted) and the refusal is audited.
+- Channel-C lessons store only sanitized preferences and rules (output format,
+  step order, confirmation/app preference, classification rule) - never message
+  bodies, contacts, IDs, or file contents. A lesson that looks private is
+  refused.
+- Team/global seeds and lessons require explicit approval, exactly like teaching
+  promotion.
+- The future fine-tuning export (channel D) only prepares sanitized, generic
+  records; it excludes private knowledge by default and trains nothing.
+
 ## Cloud AI Safety
 
 If using a cloud AI model:

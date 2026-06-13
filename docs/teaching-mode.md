@@ -4,6 +4,12 @@ Teaching Mode is how the assistant "learns" in the free, no-API baseline: the
 user teaches a task once, the assistant records generic steps, and an approved,
 sanitized workflow template comes out the other end for reuse.
 
+Teaching Mode is **channel A** of the larger
+[Trainable AI Employee Brain](training-architecture.md). The brain is also fed by
+backend/admin seeded skills (channel B), lessons learned from successful work
+(channel C), and an optional sanitized export for future fine-tuning (channel D).
+See [developer-training.md](developer-training.md) for backend training.
+
 ## Honesty first: this is not model training
 
 The app does **not** train or fine-tune an LLM. No model weights change. What

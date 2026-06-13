@@ -32,6 +32,33 @@ How it works ([docs/teaching-mode.md](docs/teaching-mode.md)):
 A local LLM (Ollama/LM Studio) or cloud provider remains an optional future
 upgrade - the teach-and-reuse loop must keep working without one.
 
+## Trainable AI Employee Brain (free, no API)
+
+Teaching Mode is one of **four training channels** that build the assistant's
+brain layer ([docs/training-architecture.md](docs/training-architecture.md)).
+Honestly, this is task-structure and preference learning, **not** LLM training -
+no model weights change, no API key or local model is required.
+
+- **A. User teaching** - the user teaches tasks from the UI (Teaching Mode).
+- **B. Backend/admin training** - a developer pre-loads generic office skills
+  (Gmail triage, WhatsApp reply drafting, report download + Excel summary, file
+  organization, …) from backend seed files. See
+  [docs/developer-training.md](docs/developer-training.md).
+- **C. Learning from successful work** - after a task, the assistant records
+  small sanitized lessons (preferred output format, step order, confirmation/app
+  preference, classification rules).
+- **D. Future fine-tuning dataset** - safe learning can be exported as
+  sanitized, generic records for an optional future fine-tuning of a local model.
+  This pass does **not** train any model.
+
+In normal chat the assistant uses this learning **silently**: it says "I can do
+that", "I'll use your usual format", "Please allow me to open Gmail", "Before I
+send this, please confirm" - never "a template matched" or "replay started".
+Seeds, lessons, and the fine-tuning export keep the same safety rails as
+everything else: permission before opening apps/sites/files, final confirmation
+before send/post/delete/upload/submit/pay, audit logging, and no private data in
+shared (team/global) learning.
+
 ## Long-Term Product Direction
 
 The desktop MVP is phase one of a larger product: a full **AI employee/assistant**, not only a desktop chat app.
