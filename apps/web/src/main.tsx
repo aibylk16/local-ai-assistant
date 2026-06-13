@@ -49,6 +49,13 @@ const WEB_ACTIONS: WebAction[] = [
     reason: 'You asked to open Gmail in the browser.',
   },
   {
+    id: 'gmail-unread',
+    label: 'Open Gmail unread search',
+    url: 'https://mail.google.com/mail/u/0/#search/is%3Aunread',
+    reason:
+      'I can open Gmail filtered to unread messages. This web preview cannot read or count your inbox yet; Gmail access or the desktop companion is needed for that.',
+  },
+  {
     id: 'outlook',
     label: 'Open Outlook',
     url: 'https://outlook.live.com/mail/',
@@ -68,6 +75,10 @@ const COMMON_NAMES = new Set([
   'ai',
   'hey',
 ])
+
+function webAction(id: string): WebAction | null {
+  return WEB_ACTIONS.find((action) => action.id === id) ?? null
+}
 
 const DEFAULT_IDENTITY: Identity = {
   assistantName: '',
@@ -133,12 +144,16 @@ function mockReply(input: string, identity: Identity): string {
 
 function detectWebAction(input: string): WebAction | null {
   const lower = input.toLowerCase()
+  const mentionsMail = /\b(gmail|email|mail|inbox)\b/.test(lower)
+  const asksUnread =
+    /\b(unread|pending|need reply|needs reply|reply pending|how many|count|check)\b/.test(lower)
+  if (mentionsMail && asksUnread) return webAction('gmail-unread')
   if (!/\b(open|launch|go to|start)\b/.test(lower)) return null
-  if (lower.includes('youtube') || lower.includes('you tube')) return WEB_ACTIONS[0] ?? null
-  if (lower.includes('gmail') || lower.includes('mail.google')) return WEB_ACTIONS[2] ?? null
-  if (lower.includes('outlook') || lower.includes('hotmail')) return WEB_ACTIONS[3] ?? null
-  if (lower.includes('email') || lower.includes('mail')) return WEB_ACTIONS[2] ?? null
-  if (lower.includes('google')) return WEB_ACTIONS[1] ?? null
+  if (lower.includes('youtube') || lower.includes('you tube')) return webAction('youtube')
+  if (lower.includes('gmail') || lower.includes('mail.google')) return webAction('gmail')
+  if (lower.includes('outlook') || lower.includes('hotmail')) return webAction('outlook')
+  if (lower.includes('email') || lower.includes('mail')) return webAction('gmail')
+  if (lower.includes('google')) return webAction('google')
   return null
 }
 

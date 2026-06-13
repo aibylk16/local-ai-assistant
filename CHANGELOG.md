@@ -4,6 +4,15 @@ Use this file to record every meaningful project change so Codex, Claude, and th
 
 ## 2026-06-13
 
+### Web preview Gmail unread action (by Codex)
+
+- Added a dedicated web-preview action for Gmail unread/pending-mail requests.
+- Requests like "check how many unread mail pending" now ask permission to open
+  Gmail filtered to unread messages instead of falling into the cloud-provider
+  safety warning.
+- The preview stays honest: it can open the Gmail unread view, but real counting
+  or reply detection still requires Gmail access or the desktop companion.
+
 ### Trainable AI Employee Brain (by Claude)
 
 **Files changed**
